@@ -1,0 +1,20 @@
+version: '3.5'
+
+# More info at https://hub.docker.com/r/vimagick/glances
+
+services:
+  glances:
+    container_name: glances
+    environment:
+      - GLANCES_OPT=-w
+    image: vimagick/glances
+    network_mode: host
+    pid: host
+    ports:
+      - 61208:61208
+#      - 61209:61209
+    restart: unless-stopped
+    volumes:
+#      - ./data/glances.conf:/glances/conf/glances.conf
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  
