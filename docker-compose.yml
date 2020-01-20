@@ -1,20 +1,32 @@
 version: '3.5'
 
 # More info at https://hub.docker.com/r/vimagick/glances
+#              https://glances.readthedocs.io/en/latest/quickstart.html
 
 services:
   glances:
     container_name: glances
     environment:
-      - GLANCES_OPT=-w
-    image: vimagick/glances
+# -------------- Export is only available in standalone or client mode
+# WEB with logging to JSON file
+#        GLANCES_OPT: "--time 10 --webserver --diskio-iops --export-json-file /opt/glances.json"
+# REST API server (on $HOST_IP:61208/api/3/)
+#        GLANCES_OPT: "--time 10 --webserver --disable-webui --diskio-iops"
+# just log to JSON
+#        GLANCES_OPT: "--time 10 --diskio-iops --export json --export-json-file /opt/glances.json"
+# just log to kafka topic
+        GLANCES_OPT: "--time 10 --diskio-iops --enable-plugin kafka --export kafka"
+    image: ubuntu-s2.home:5000/thirdparty/glances:latest
     network_mode: host
     pid: host
     ports:
       - 61208:61208
 #      - 61209:61209
     restart: unless-stopped
+    stdin_open: true
+    tty: true
     volumes:
-#      - ./data/glances.conf:/glances/conf/glances.conf
+      - ./etc:/etc/glances
+      - ./data:/opt
       - /var/run/docker.sock:/var/run/docker.sock:ro
   
